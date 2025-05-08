@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Facturación para Restaurantes</title>
+    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/print.css" media="print">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sistema de Facturación para Restaurantes</h1>
+            <div class="header-actions">
+                <button id="toggle-dark-mode" aria-label="Modo oscuro">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+        </header>
+        
+        <main class="main-content">
+            <section class="panel menu-panel" aria-labelledby="products-heading">
+                <h2 id="products-heading">Agregar Productos</h2>
+                <form id="product-form">
+                    <div class="form-group">
+                        <label for="product-name">Nombre del Producto:</label>
+                        <input type="text" id="product-name" placeholder="Ej: Pizza Margarita" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-price">Precio:</label>
+                        <input type="number" id="product-price" placeholder="0.00" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-qty">Cantidad:</label>
+                        <input type="number" id="product-qty" placeholder="1" min="1" value="1" required>
+                    </div>
+                    <button type="submit" id="add-product" class="btn-primary">
+                        <i class="fas fa-plus"></i> Agregar al Ticket
+                    </button>
+                </form>
+                
+                <h3>Productos en el Ticket</h3>
+                <div class="table-container">
+                    <table class="product-table" aria-describedby="products-heading">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Precio</th>
+                                <th>Cant.</th>
+                                <th>Total</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="product-list">
+                            <!-- Los productos se agregan dinámicamente aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <section class="panel ticket-panel" aria-labelledby="ticket-heading">
+                <h2 id="ticket-heading">Vista Previa del Ticket</h2>
+                
+                <article class="ticket-container" id="ticket">
+                    <header class="ticket-header">
+                        <h3 id="restaurant-name">Restaurant El Buen Sabor</h3>
+                        <p id="restaurant-address">Av. Principal #123, Ciudad</p>
+                        <p id="restaurant-phone">Tel: (123) 456-7890</p>
+                        <p>Ticket #<span id="ticket-number">001</span></p>
+                        <p>Fecha: <span id="ticket-date">01/01/2023</span></p>
+                        <p>Hora: <span id="ticket-time">12:00</span></p>
+                    </header>
+                    
+                    <div class="ticket-body">
+                        <table class="ticket-table" aria-describedby="ticket-heading">
+                            <thead>
+                                <tr>
+                                    <th>Cant.</th>
+                                    <th>Descripción</th>
+                                    <th>Precio</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ticket-items">
+                                <!-- Los productos se agregan dinámicamente aquí -->
+                            </tbody>
+                        </table>
+                        
+                        <div class="totals">
+                            <p>Subtotal: <span id="subtotal">$0.00</span></p>
+                            <p class="tax-row">IVA (<span id="tax-rate-display">16</span>%): <span id="tax">$0.00</span></p>
+                            <p><strong>Total: <span id="total">$0.00</span></strong></p>
+                        </div>
+                    </div>
+                    
+                    <footer class="ticket-footer">
+                        <p id="custom-message">Esperamos verle pronto.</p>
+                    </footer>
+                </article>
+                
+                <div class="actions">
+                    <button id="print-ticket" class="btn-primary">
+                        <i class="fas fa-print"></i> Imprimir Ticket
+                    </button>
+                    <button type="button" id="save-ticket" class="btn-secondary">
+                        <i class="fas fa-save"></i> Guardar Ticket
+                    </button>
+                    <button id="new-ticket" class="btn-danger">
+                        <i class="fas fa-receipt"></i> Nuevo Ticket
+                    </button>
+                </div>
+            </section>
+            
+            <section class="panel config-panel" aria-labelledby="config-heading">
+                <h2 id="config-heading">Configuración del Sistema</h2>
+                
+                <div class="tabs">
+                    <div class="tab-links" role="tablist">
+                        <button class="tab-link active" data-tab="info-tab" role="tab" aria-selected="true" aria-controls="info-tab">
+                            Información del Restaurante
+                        </button>
+                        <button class="tab-link" data-tab="design-tab" role="tab" aria-selected="false" aria-controls="design-tab">
+                            Diseño del Ticket
+                        </button>
+                        <button class="tab-link" data-tab="settings-tab" role="tab" aria-selected="false" aria-controls="settings-tab">
+                            Configuración
+                        </button>
+                    </div>
+                    
+                    <div class="tab-content">
+                        <article class="tab-pane active" id="info-tab" role="tabpanel" aria-labelledby="info-tab">
+                            <form id="restaurant-info-form">
+                                <div class="form-group">
+                                    <label for="config-name">Nombre del Restaurante:</label>
+                                    <input type="text" id="config-name" value="Restaurant El Buen Sabor" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="config-address">Dirección:</label>
+                                    <input type="text" id="config-address" value="Av. Principal #123, Ciudad">
+                                </div>
+                                <div class="form-group">
+                                    <label for="config-phone">Teléfono:</label>
+                                    <input type="tel" id="config-phone" value="(123) 456-7890">
+                                </div>
+                                <div class="form-group">
+                                    <label for="config-message">Mensaje personalizado:</label>
+                                    <textarea id="config-message">Esperamos verle pronto.</textarea>
+                                </div>
+                                <button type="submit" id="update-info" class="btn-primary">
+                                    <i class="fas fa-sync-alt"></i> Actualizar Información
+                                </button>
+                            </form>
+                        </article>
+                        
+                        <article class="tab-pane" id="design-tab" role="tabpanel" aria-labelledby="design-tab" hidden>
+                            <form id="ticket-design-form">
+                                <h3>Personalización del Ticket</h3>
+                                <div class="theme-options">
+                                    <div class="form-group">
+                                        <label for="font-size">Tamaño de Fuente:</label>
+                                        <select id="font-size">
+                                            <option value="12px">Pequeño</option>
+                                            <option value="14px" selected>Mediano</option>
+                                            <option value="16px">Grande</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="border-style">Estilo de Borde:</label>
+                                        <select id="border-style">
+                                            <option value="solid">Sólido</option>
+                                            <option value="dashed" selected>Discontinuo</option>
+                                            <option value="dotted">Punteado</option>
+                                            <option value="double">Doble</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <h3>Colores</h3>
+                                <div class="color-picker">
+                                    <label for="header-color">Color de Encabezado:</label>
+                                    <input type="color" id="header-color" value="#4a6fa5">
+                                    <div class="color-preview" style="background-color: #4a6fa5;"></div>
+                                </div>
+                                <div class="color-picker">
+                                    <label for="text-color">Color de Texto:</label>
+                                    <input type="color" id="text-color" value="#333333">
+                                    <div class="color-preview" style="background-color: #333333;"></div>
+                                </div>
+                                <div class="color-picker">
+                                    <label for="accent-color">Color de Acento:</label>
+                                    <input type="color" id="accent-color" value="#4fc3a1">
+                                    <div class="color-preview" style="background-color: #4fc3a1;"></div>
+                                </div>
+                                
+                                <button type="submit" id="apply-design" class="btn-primary">
+                                    <i class="fas fa-paint-brush"></i> Aplicar Diseño
+                                </button>
+                            </form>
+                        </article>
+                        
+                        <article class="tab-pane" id="settings-tab" role="tabpanel" aria-labelledby="settings-tab" hidden>
+                            <form id="system-settings-form">
+                                <div class="form-group">
+                                    <label for="tax-rate">Tasa de Impuesto (%):</label>
+                                    <input type="number" id="tax-rate" value="16" min="0" max="100" step="0.1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="currency-symbol">Símbolo de Moneda:</label>
+                                    <input type="text" id="currency-symbol" value="$" maxlength="3" required>
+                                </div>
+                                <div class="form-group checkbox-group">
+                                    <input type="checkbox" id="include-tax" checked>
+                                    <label for="include-tax">Incluir impuestos en el ticket</label>
+                                </div>
+                                <div class="form-group checkbox-group">
+                                    <input type="checkbox" id="auto-numbering" checked>
+                                    <label for="auto-numbering">Numeración automática de tickets</label>
+                                </div>
+                                <div class="form-group checkbox-group">
+                                    <input type="checkbox" id="dark-mode">
+                                    <label for="dark-mode">Modo oscuro</label>
+                                </div>
+                                <button type="submit" id="save-settings" class="btn-primary">
+                                    <i class="fas fa-cog"></i> Guardar Configuración
+                                </button>
+                            </form>
+                        </article>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="./js/modules/ProductManager.js" type="module"></script>
+    <script src="./js/modules/TicketManager.js" type="module"></script>
+    <script src="./js/modules/ConfigManager.js" type="module"></script>
+    <script src="./js/modules/UIManager.js" type="module"></script>
+    <script src="./js/app.js" type="module"></script>
+    <script>console.log('Scripts cargados correctamente en index.html');</script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const saveTicketButton = document.getElementById('save-ticket');
+            console.log('Botón save-ticket encontrado:', saveTicketButton);
+        });
+    </script>
+</body>
+</html>

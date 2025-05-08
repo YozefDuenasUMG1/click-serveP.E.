@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Click&serve</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#E6B800',
+                        dark: '#161616',
+                        background: '#2A2D34',
+                    },
+                    fontFamily: {
+                        display: ['Playfair Display', 'serif'],
+                        sans: ['Lato', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background font-sans min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <div class="bg-dark border border-primary rounded-lg shadow-xl shadow-primary/20 p-8">
+            <!-- Logo y Título -->
+            <div class="text-center mb-8">
+                <h1 class="text-primary text-3xl font-bold font-display">Click&serve</h1>
+                <p class="text-white mt-2 text-lg">Bienvenido al Sistema</p>
+            </div>
+            
+            <!-- Mensaje de Error -->
+            <?php if (!empty($_GET['error'])): ?>
+                <div class="bg-red-900/20 border border-red-500/30 text-red-400 px-4 py-3 rounded mb-6 text-center text-sm">
+                    <?= htmlspecialchars($_GET['error']) ?>
+                </div>
+            <?php endif; ?>
+            
+            <!-- Formulario -->
+            <form action="auth/login.php" method="post" id="loginForm">
+                <!-- Usuario -->
+                <div class="mb-4">
+                    <div class="relative border border-gray-700 rounded-lg focus-within:border-primary transition-all">
+                        <input 
+                            class="w-full bg-transparent text-white px-4 py-3 rounded-lg focus:outline-none"
+                            placeholder="Usuario" 
+                            type="text" 
+                            name="usuario" 
+                            id="usuario" 
+                            required
+                        >
+                    </div>
+                </div>
+                
+                <!-- Contraseña -->
+                <div class="mb-6">
+                    <div class="relative border border-gray-700 rounded-lg focus-within:border-primary transition-all">
+                        <input 
+                            class="w-full bg-transparent text-white px-4 py-3 rounded-lg focus:outline-none"
+                            placeholder="Contraseña" 
+                            type="password" 
+                            name="password" 
+                            id="password" 
+                            required
+                        >
+                    </div>
+                </div>
+                
+                <!-- Botón de Inicio de Sesión -->
+                <button 
+                    type="submit" 
+                    class="w-full bg-primary hover:bg-primary/90 text-dark font-bold py-3 px-4 rounded-lg transition-all transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                >
+                    Iniciar Sesión
+                </button>
+            </form>
+            
+            <!-- Decoración -->
+            <div class="flex justify-center mt-8">
+                <div class="w-8 h-2 bg-primary rounded-full"></div>
+            </div>
+            
+            <!-- Enlace de Registro -->
+            <div class="text-center mt-4">
+                <a href="auth/register.php" class="text-primary hover:underline">¿No tienes una cuenta? Regístrate aquí</a>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="text-center mt-4 text-gray-400 text-sm">
+            &copy; <?= date('Y') ?> Click&serve - Todos los derechos reservados
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('loginForm');
+            
+            form.addEventListener('submit', function(e) {
+                const usuario = document.getElementById('usuario');
+                const password = document.getElementById('password');
+                
+                // Validación básica
+                if (usuario.value.trim() === '') {
+                    e.preventDefault();
+                    alert('Por favor ingrese su nombre de usuario');
+                    usuario.focus();
+                    return false;
+                }
+                
+                if (password.value.trim() === '') {
+                    e.preventDefault();
+                    alert('Por favor ingrese su contraseña');
+                    password.focus();
+                    return false;
+                }
+            });
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const error = urlParams.get('error');
+
+            if (error) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'bg-red-900/20 border border-red-500/30 text-red-400 px-4 py-3 rounded mb-6 text-center text-sm';
+                errorDiv.textContent = decodeURIComponent(error);
+                const formContainer = document.querySelector('.bg-dark');
+                formContainer.insertBefore(errorDiv, formContainer.firstChild);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú de Pedido</title>
+    <!-- Agregar Bootstrap para estilos -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Agregar el enlace al archivo CSS externo -->
+    <link rel="stylesheet" href="./public/carrito.css">
+    <!-- Agregar el enlace al archivo CSS externo para el menú -->
+    <link rel="stylesheet" href="./public/menu.css">
+    
+</head>
+<body class="bg-light">
+<div class="container py-5">
+    <h2 class="text-center mb-4">Menú de Pedido</h2>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <label for="mesa" class="form-label">Número de Mesa</label>
+            <select id="mesa" class="form-control">
+                <option value="" disabled selected>Selecciona una mesa</option>
+                <!-- Generar opciones del 1 al 15 -->
+                <script>
+                    for (let i = 1; i <= 15; i++) {
+                        document.write(`<option value="${i}">Mesa ${i}</option>`);
+                    }
+                </script>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label for="detalle" class="form-label">Detalles del Pedido</label>
+            <textarea id="detalle" class="form-control" rows="2" placeholder="Escribe aquí detalles adicionales sobre tu pedido"></textarea>
+        </div>
+    </div>
+
+    <h4 class="mb-4">Selecciona tus pedidos:</h4>
+    
+    <!-- Pizzas -->
+    <div class="menu-category">
+        <h4 class="category-title">Pizzas</h4>
+        <img src="https://www.laespanolaaceites.com/wp-content/uploads/2019/06/pizza-con-chorizo-jamon-y-queso-1080x671.jpg" alt="Pizzas" style="width: 150px; height: auto;">
+        <div class="menu-item">
+            <input type="checkbox" value="Pizza Hawaiana - Piña, jamón, queso mozzarella, salsa de tomate" data-precio="65" onchange="actualizarCarrito(this)">
+            Pizza Hawaiana - Q65
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Pizza Pepperoni - Pepperoni, queso mozzarella, salsa de tomate" data-precio="60" onchange="actualizarCarrito(this)">
+            Pizza Pepperoni - Q60
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Pizza Vegetariana - Champiñones, pimientos, cebolla, aceitunas, queso mozzarella" data-precio="70" onchange="actualizarCarrito(this)">
+            Pizza Vegetariana - Q70
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Pizza 4 Quesos - Queso mozzarella, gorgonzola, parmesano, fontina" data-precio="75" onchange="actualizarCarrito(this)">
+            Pizza 4 Quesos - Q75
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Pizza BBQ Pollo - Pollo, salsa BBQ, cebolla morada, queso mozzarella" data-precio="70" onchange="actualizarCarrito(this)">
+            Pizza BBQ Pollo - Q70
+        </div>
+    </div>
+    
+    <!-- Hamburguesas -->
+    <div class="menu-category">
+        <h4 class="category-title">Hamburguesas</h4>
+        <img src="https://img.hogar.mapfre.es/wp-content/uploads/2018/09/hamburguesa-sencilla.jpg" alt="Hamburguesas" style="width: 150px; height: auto;">
+        <div class="menu-item">
+            <input type="checkbox" value="Hamburguesa Clásica - Carne de res, lechuga, tomate, cebolla, queso americano" data-precio="45" onchange="actualizarCarrito(this)">
+            Hamburguesa Clásica - Q45
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Hamburguesa Doble Queso - Doble carne, doble queso, lechuga, salsa especial" data-precio="55" onchange="actualizarCarrito(this)">
+            Hamburguesa Doble Queso - Q55
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Hamburguesa Pollo Crispy - Pechuga empanizada, lechuga, mayonesa" data-precio="50" onchange="actualizarCarrito(this)">
+            Hamburguesa Pollo Crispy - Q50
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Hamburguesa Vegetariana - Hamburguesa de lentejas, aguacate, espinacas" data-precio="48" onchange="actualizarCarrito(this)">
+            Hamburguesa Vegetariana - Q48
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Hamburguesa BBQ Bacon - Carne de res, tocino, aros de cebolla, salsa BBQ" data-precio="60" onchange="actualizarCarrito(this)">
+            Hamburguesa BBQ Bacon - Q60
+        </div>
+    </div>
+    
+    <!-- Tacos -->
+    <div class="menu-category">
+        <h4 class="category-title">Tacos</h4>
+        <img src="https://www.pequerecetas.com/wp-content/uploads/2020/10/tacos-mexicanos.jpg" alt="Tacos" style="width: 150px; height: auto;">
+        <div class="menu-item">
+            <input type="checkbox" value="Tacos al Pastor - Carne de cerdo, piña, cebolla, cilantro" data-precio="35" onchange="actualizarCarrito(this)">
+            Tacos al Pastor - Q35
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Tacos de Pollo - Pollo desmenuzado, guacamole, crema" data-precio="30" onchange="actualizarCarrito(this)">
+            Tacos de Pollo - Q30
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Tacos de Res - Carne asada, pico de gallo, frijoles" data-precio="40" onchange="actualizarCarrito(this)">
+            Tacos de Res - Q40
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Tacos Vegetarianos - Hongos, pimientos, queso fresco" data-precio="32" onchange="actualizarCarrito(this)">
+            Tacos Vegetarianos - Q32
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Tacos de Pescado - Filete empanizado, repollo, salsa tártara" data-precio="45" onchange="actualizarCarrito(this)">
+            Tacos de Pescado - Q45
+        </div>
+    </div>
+    
+    <!-- Pastas -->
+    <div class="menu-category">
+        <h4 class="category-title">Pastas</h4>
+        <img src="https://www.lavanguardia.com/files/og_thumbnail/files/fp/uploads/2020/09/09/5f58b1bb6d322.r_d.627-418-0.jpeg" alt="Pastas" style="width: 150px; height: auto;">
+        <div class="menu-item">
+            <input type="checkbox" value="Spaghetti Bolognesa - Salsa de carne, queso parmesano" data-precio="50" onchange="actualizarCarrito(this)">
+            Spaghetti Bolognesa - Q50
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Fettuccine Alfredo - Salsa cremosa, pollo, champiñones" data-precio="55" onchange="actualizarCarrito(this)">
+            Fettuccine Alfredo - Q55
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Lasagna - Capas de pasta, carne, queso, salsa de tomate" data-precio="60" onchange="actualizarCarrito(this)">
+            Lasagna - Q60
+        </div>
+    </div>
+    
+    <!-- Desayunos -->
+    <div class="menu-category">
+        <h4 class="category-title">Desayunos</h4>
+        <img src="https://images.squarespace-cdn.com/content/v1/660b0a408017fa7b58092184/fac78d68-0092-44ff-b1d1-2a6e5bf7670a/03-Chapin.jpg" alt="Desayunos" style="width: 150px; height: auto;">
+        <div class="menu-item">
+            <input type="checkbox" value="Desayuno Tradicional - Huevos, frijoles, plátanos, pan, café" data-precio="40" onchange="actualizarCarrito(this)">
+            Desayuno Tradicional - Q40
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Chilaquiles - Totopos, salsa verde, pollo, crema, queso" data-precio="45" onchange="actualizarCarrito(this)">
+            Chilaquiles - Q45
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Omelette Mixto - Jamón, queso, champiñones, jugo natural" data-precio="38" onchange="actualizarCarrito(this)">
+            Omelette Mixto - Q38
+        </div>
+    </div>
+    
+    <!-- Cenas -->
+    <div class="menu-category">
+        <h4 class="category-title">Cenas</h4>
+        <img src="https://i.ytimg.com/vi/hHedNO6GS3k/sddefault.jpg" alt="Cenas" style="width: 150px; height: auto;">
+        <div class="menu-item">
+            <input type="checkbox" value="Sandwich Club - Pan tostado, pollo, tocino, aguacate" data-precio="35" onchange="actualizarCarrito(this)">
+            Sandwich Club - Q35
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Crepes de Espinacas - Espinacas, queso, salsa blanca" data-precio="42" onchange="actualizarCarrito(this)">
+            Crepes de Espinacas - Q42
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Enchiladas - Tortillas rellenas de pollo, salsa roja, crema" data-precio="45" onchange="actualizarCarrito(this)">
+            Enchiladas - Q45
+        </div>
+    </div>
+    
+    <!-- Sopas -->
+    <div class="menu-category">
+        <h4 class="category-title">Sopas</h4>
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBAFdbyy9D6RsBVU2Nu_OZeDIWpwN5PtETrw&s" alt="Sopas" style="width: 150px; height: auto;">
+        <div class="menu-item">
+            <input type="checkbox" value="Sopa de Res - Verduras, carne, maíz" data-precio="40" onchange="actualizarCarrito(this)">
+            Sopa de Res - Q40
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Sopa de Pollo - Fideos, zanahoria, cilantro" data-precio="35" onchange="actualizarCarrito(this)">
+            Sopa de Pollo - Q35
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Sopa de Tomate - Crema de tomate, albahaca, croutons" data-precio="30" onchange="actualizarCarrito(this)">
+            Sopa de Tomate - Q30
+        </div>
+    </div>
+    
+    <!-- Ensaladas -->
+    <div class="menu-category">
+        <h4 class="category-title">Ensaladas</h4>
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5ttboBLzQuY5VPQGm92DKWibKfjyIdV4-RA&s" alt="Ensaladas" style="width: 150px; height: auto;">
+        <div class="menu-item">
+            <input type="checkbox" value="Ensalada César - Lechuga, pollo, croutons, aderezo César" data-precio="45" onchange="actualizarCarrito(this)">
+            Ensalada César - Q45
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Ensalada Griega - Pepino, tomate, aceitunas, queso feta" data-precio="50" onchange="actualizarCarrito(this)">
+            Ensalada Griega - Q50
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Ensalada de Frutas - Variedad de frutas frescas, miel" data-precio="35" onchange="actualizarCarrito(this)">
+            Ensalada de Frutas - Q35
+        </div>
+    </div>
+    
+    <!-- Bebidas Frías -->
+    <div class="menu-category">
+        <h4 class="category-title">Bebidas Frías</h4>
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6mi-99k5AFl32esZ_ljlPNf_8XF3YN4Rw3w&s" alt="Bebidas Frías" style="width: 150px; height: auto;">
+        <div class="menu-item">
+            <input type="checkbox" value="Agua pura" data-precio="10" onchange="actualizarCarrito(this)">
+            Agua pura - Q10
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Limonada Natural" data-precio="12" onchange="actualizarCarrito(this)">
+            Limonada Natural - Q12
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Jamaica" data-precio="10" onchange="actualizarCarrito(this)">
+            Jamaica - Q10
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Horchata" data-precio="12" onchange="actualizarCarrito(this)">
+            Horchata - Q12
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Smoothie de Mango" data-precio="18" onchange="actualizarCarrito(this)">
+            Smoothie de Mango - Q18
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Té Frío" data-precio="10" onchange="actualizarCarrito(this)">
+            Té Frío - Q10
+        </div>
+    </div>
+    
+    <!-- Bebidas Calientes -->
+    <div class="menu-category">
+        <h4 class="category-title">Bebidas Calientes</h4>
+        <img src="https://img.freepik.com/vector-gratis/taza-realista-cafe-negro-elaborado-ilustracion-vector-platillo_1284-66002.jpg" alt="Bebidas Calientes" style="width: 150px; height: auto;">
+        <div class="menu-item">
+            <input type="checkbox" value="Café Americano" data-precio="10" onchange="actualizarCarrito(this)">
+            Café Americano - Q10
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Chocolate Caliente" data-precio="15" onchange="actualizarCarrito(this)">
+            Chocolate Caliente - Q15
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Té de Manzanilla" data-precio="8" onchange="actualizarCarrito(this)">
+            Té de Manzanilla - Q8
+        </div>
+    </div>
+    
+    <!-- Sodas -->
+    <div class="menu-category">
+        <h4 class="category-title">Sodas</h4>
+        <img src="https://cdn.pixabay.com/photo/2014/09/12/18/20/can-443123_640.png" alt="Sodas" style="width: 150px; height: auto;">
+        <div class="menu-item">
+            <input type="checkbox" value="Coca-Cola" data-precio="8" onchange="actualizarCarrito(this)">
+            Coca-Cola - Q8
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Pepsi" data-precio="7" onchange="actualizarCarrito(this)">
+            Pepsi - Q7
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Fanta Naranja" data-precio="7" onchange="actualizarCarrito(this)">
+            Fanta Naranja - Q7
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Sprite" data-precio="7" onchange="actualizarCarrito(this)">
+            Sprite - Q7
+        </div>
+        <div class="menu-item">
+            <input type="checkbox" value="Agua Mineral" data-precio="5" onchange="actualizarCarrito(this)">
+            Agua Mineral - Q5
+        </div>
+    </div>
+</div>
+
+<button id="toggle-carrito" class="btn btn-secondary">Carrito</button>
+<div id="carrito-container">
+    <h4>Carrito de Pedido</h4>
+    <ul id="carrito" class="list-group mb-2"></ul>
+    <h5>Total: Q<span id="total">0</span></h5>
+    <button class="btn btn-primary mt-3 w-100" onclick="enviarPedido()">Enviar Pedido</button>
+</div>
+
+<script type="module" src="./public/carrito.js"></script>
+<script type="module" src="./src/controllers/obtener_pedidos.js"></script>
+
+<!-- Agregar Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

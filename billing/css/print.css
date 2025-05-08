@@ -1,0 +1,53 @@
+/* Estilos específicos para impresión */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    
+    .ticket-panel, .ticket-panel * {
+        visibility: visible;
+    }
+    
+    .ticket-panel {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        box-shadow: none;
+        background-color: white;
+        color: black;
+    }
+    
+    .ticket-container {
+        border: none;
+        min-height: auto;
+    }
+    
+    .actions {
+        display: none !important;
+    }
+    
+    /* Asegurar que los colores se impriman correctamente */
+    .ticket-header {
+        color: black !important;
+    }
+    
+    /* Forzar fondos blancos para impresión */
+    .ticket-table th {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        background-color: #4a6fa5 !important;
+        color: white !important;
+    }
+    
+    /* Ocultar elementos no necesarios en impresión */
+    .no-print {
+        display: none !important;
+    }
+    
+    /* Ajustar márgenes para impresión */
+    @page {
+        size: auto;
+        margin: 5mm;
+    }
+}
