@@ -1,0 +1,387 @@
+// Variables y funciones globales
+window.currentTicket = {
+    items: [],
+    subtotal: 0,
+    tax: 0,
+    total: 0,
+    customer: 'Consumidor Final',
+    nit: 'C/F'
+};
+
+window.businessInfo = {
+    nombre: 'Click&Serve Restaurant',
+    direccion: 'Dirección del Restaurante',
+    telefono: '(502) XXXX-XXXX',
+    mensaje_pie: '¡Gracias por su preferencia!'
+};
+
+window.formatMoney = function(amount) {
+    return Number(amount).toFixed(2);
+};
+
+window.formatDate = function(date) {
+    if (typeof date === 'string') {
+        date = new Date(date);
+    }
+    return date instanceof Date && !isNaN(date) ? 
+        date.toLocaleDateString('es-GT', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit'
+        }) : 'Fecha inválida';
+};
+
+window.updateTicketDisplay = function() {
+    const ticketContainer = document.getElementById('ticket');
+    const subtotalElement = document.getElementById('subtotal');
+    const taxElement = document.getElementById('tax');
+    const totalElement = document.getElementById('total');
+
+    if (!window.currentTicket) return;
+
+    const businessInfo = window.businessInfo || {
+        nombre: document.getElementById('business_name')?.value || 'Click&Serve Restaurant',
+        direccion: document.getElementById('business_address')?.value || 'Dirección del Restaurante',
+        telefono: document.getElementById('business_phone')?.value || '(502) XXXX-XXXX',
+        mensaje_pie: document.getElementById('footer_message')?.value || '¡Gracias por su preferencia!'
+    };
+
+    const ticketHTML = `
+        <div class="ticket-header">
+            <h3>${businessInfo.nombre}</h3>
+            <p>${businessInfo.direccion}</p>
+            <p>${businessInfo.telefono}</p>
+            ${window.currentTicket.numero_factura ? 
+                `<p>Factura No: ${window.currentTicket.numero_factura}</p>` : ''}
+            <p>Fecha: ${window.formatDate(new Date())}</p>
+            <p>Cliente: ${window.currentTicket.customer}</p>
+            <p>NIT/DPI: ${window.currentTicket.nit}</p>
+        </div>
+        <table class="ticket-items">
+            <thead>
+                <tr>
+                    <th>Cant</th>
+                    <th>Descripción</th>
+                    <th>Precio</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${window.currentTicket.items.map(item => `
+                    <tr>
+                        <td>${item.cantidad}</td>
+                        <td>${item.descripcion}</td>
+                        <td>Q${window.formatMoney(item.precio)}</td>
+                        <td>Q${window.formatMoney(item.total)}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        </table>
+        <div class="ticket-footer">
+            <p>${businessInfo.mensaje_pie}</p>
+        </div>
+    `;
+
+    if (ticketContainer) ticketContainer.innerHTML = ticketHTML;
+    if (subtotalElement) subtotalElement.textContent = `Q${window.formatMoney(window.currentTicket.subtotal)}`;
+    if (taxElement) taxElement.textContent = `Q${window.formatMoney(window.currentTicket.tax)}`;
+    if (totalElement) totalElement.textContent = `Q${window.formatMoney(window.currentTicket.total)}`;
+};
+
+// Funciones para el panel de facturas
+window.viewInvoice = async function(id) {
+    try {
+        const response = await fetch(`get_invoices.php?id=${id}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            window.currentTicket = {
+                id: data.invoice.id,
+                numero_factura: data.invoice.numero_factura,
+                items: data.invoice.items,
+                customer: data.invoice.cliente,
+                nit: data.invoice.nit,
+                subtotal: parseFloat(data.invoice.subtotal),
+                tax: parseFloat(data.invoice.impuesto),
+                total: parseFloat(data.invoice.total),
+                estado: data.invoice.estado,
+                datos_restaurante: data.invoice.datos_restaurante
+            };
+            
+            window.updateTicketDisplay();
+            const cancelButton = document.getElementById('cancel-ticket');
+            if (cancelButton) {
+                cancelButton.style.display = window.currentTicket.estado === 'activa' ? 'inline-block' : 'none';
+            }
+            
+            // Desplazarse a la vista previa del ticket
+            document.querySelector('.ticket-panel').scrollIntoView({ behavior: 'smooth' });
+        } else {
+            throw new Error(data.message || 'Error al cargar la factura');
+        }
+    } catch (error) {
+        console.error('Error al cargar la factura:', error);
+        alert(error.message || 'Error al cargar la factura');
+    }
+};
+
+window.printInvoice = async function(id) {
+    window.open(`imprimir_factura.php?id=${id}`, '_blank');
+};
+
+window.cancelInvoice = async function(id) {
+    if (!confirm('¿Está seguro de que desea anular esta factura?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch('cancel_invoice.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ id })
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('Factura anulada correctamente');
+            // Recargar la página para actualizar la lista de facturas
+            window.location.reload();
+        } else {
+            throw new Error(data.message || 'Error al anular la factura');
+        }
+    } catch (error) {
+        console.error('Error al anular factura:', error);
+        alert(error.message || 'Error al anular la factura');
+    }
+};
+
+// Make loadInvoices globally accessible
+window.loadInvoices = async function(searchTerm = '') {
+    try {
+        const url = searchTerm 
+            ? `get_invoices.php?search=${encodeURIComponent(searchTerm)}`
+            : 'get_invoices.php';
+            
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.success) {
+            const invoicesList = document.getElementById('invoices-list');
+            if (invoicesList) {
+                invoicesList.innerHTML = data.invoices.map(invoice => `
+                    <tr>
+                        <td>${invoice.numero_factura}</td>
+                        <td>${window.formatDate(invoice.fecha)}</td>
+                        <td>${invoice.cliente || 'Consumidor Final'}</td>
+                        <td class="text-right">Q${window.formatMoney(invoice.total)}</td>
+                        <td>
+                            <span class="status-${invoice.estado}">
+                                ${invoice.estado.charAt(0).toUpperCase() + invoice.estado.slice(1)}
+                            </span>
+                        </td>
+                        <td>
+                            <button onclick="window.viewInvoice(${invoice.id})" class="btn-view">Ver</button>
+                            <button onclick="window.printInvoice(${invoice.id})" class="btn-print">Imprimir</button>
+                            ${invoice.estado === 'activa' ? 
+                                `<button onclick="window.cancelInvoice(${invoice.id})" class="btn-cancel">Anular</button>` : 
+                                ''}
+                        </td>
+                    </tr>
+                `).join('');
+            }
+        } else {
+            throw new Error(data.message);
+        }
+    } catch (error) {
+        console.error('Error al cargar facturas:', error);
+        alert('Error al cargar las facturas');
+    }
+};
+
+// Funciones para manejar la información del negocio
+window.loadBusinessInfo = async function() {
+    try {
+        // Intentar cargar desde localStorage primero
+        const savedInfo = localStorage.getItem('businessInfo');
+        if (savedInfo) {
+            window.businessInfo = JSON.parse(savedInfo);
+            updateBusinessInfoForm();
+            window.updateTicketDisplay();
+            return;
+        }
+
+        // Si no hay datos en localStorage, cargar desde el servidor
+        const response = await fetch('get_business_info.php');
+        const data = await response.json();
+        
+        if (data.success) {
+            window.businessInfo = data.data;
+            // Guardar en localStorage
+            localStorage.setItem('businessInfo', JSON.stringify(data.data));
+            updateBusinessInfoForm();
+            window.updateTicketDisplay();
+        }
+    } catch (error) {
+        console.error('Error cargando información del negocio:', error);
+    }
+};
+
+window.updateBusinessInfoForm = function() {
+    const form = document.getElementById('businessInfoForm');
+    if (form) {
+        form.querySelector('[name="nombre"]').value = window.businessInfo.nombre;
+        form.querySelector('[name="direccion"]').value = window.businessInfo.direccion;
+        form.querySelector('[name="telefono"]').value = window.businessInfo.telefono;
+        form.querySelector('[name="mensaje_pie"]').value = window.businessInfo.mensaje_pie;
+    }
+};
+
+window.saveBusinessInfo = async function(event) {
+    event.preventDefault();
+    
+    const formData = {
+        nombre: document.querySelector('[name="nombre"]').value.trim(),
+        direccion: document.querySelector('[name="direccion"]').value.trim(),
+        telefono: document.querySelector('[name="telefono"]').value.trim(),
+        mensaje_pie: document.querySelector('[name="mensaje_pie"]').value.trim()
+    };
+
+    try {
+        const response = await fetch('save_business_info.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const data = await response.json();
+        
+        if (data.success) {
+            window.businessInfo = formData;
+            localStorage.setItem('businessInfo', JSON.stringify(formData));
+            window.updateTicketDisplay();
+            alert('Información actualizada correctamente');
+            window.closeBusinessInfoModal();
+        } else {
+            throw new Error(data.message || 'Error al guardar la información');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert(error.message || 'Error al guardar la información');
+    }
+};
+
+// Funciones del modal
+window.openBusinessInfoModal = function() {
+    const modal = document.getElementById('businessInfoModal');
+    if (modal) {
+        modal.style.display = 'block';
+        window.updateBusinessInfoForm();
+    }
+};
+
+window.closeBusinessInfoModal = function() {
+    const modal = document.getElementById('businessInfoModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+};
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-invoice');
+    const searchBtn = document.getElementById('search-btn');
+
+    if (searchBtn) searchBtn.addEventListener('click', window.handleSearch);
+    if (searchInput) searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') window.handleSearch();
+    });
+
+    // Mostrar la vista previa inicial del ticket
+    window.updateTicketDisplay();
+    
+    // Cargar facturas al iniciar
+    window.loadInvoices();
+    
+    // Cargar información del negocio al iniciar
+    window.loadBusinessInfo();
+
+    // Modal event listeners
+    const configBtn = document.getElementById('config-business');
+    if (configBtn) {
+        configBtn.addEventListener('click', window.openBusinessInfoModal);
+    }
+
+    const closeButtons = document.querySelectorAll('.close, .btn-cancel');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', window.closeBusinessInfoModal);
+    });
+
+    // Cerrar modal al hacer clic fuera
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('businessInfoModal');
+        if (event.target === modal) {
+            window.closeBusinessInfoModal();
+        }
+    });
+
+    // Manejar el formulario de información del negocio
+    const businessInfoForm = document.getElementById('businessInfoForm');
+    if (businessInfoForm) {
+        businessInfoForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                nombre: businessInfoForm.querySelector('[name="nombre"]').value,
+                direccion: businessInfoForm.querySelector('[name="direccion"]').value,
+                telefono: businessInfoForm.querySelector('[name="telefono"]').value,
+                mensaje_pie: businessInfoForm.querySelector('[name="mensaje_pie"]').value
+            };
+
+            try {
+                const response = await fetch('save_business_info.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    alert('Información actualizada correctamente');
+                    window.closeBusinessInfoModal();
+                    // Actualizar la vista previa con los datos guardados
+                    window.businessInfo = formData;
+                    window.updateTicketDisplay();
+                } else {
+                    throw new Error(data.message || 'Error al guardar la información');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert(error.message || 'Error al guardar la información');
+            }
+        });
+
+        // Vista previa en tiempo real
+        const inputs = businessInfoForm.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('input', function() {
+                window.businessInfo = {
+                    nombre: document.querySelector('[name="nombre"]').value,
+                    direccion: document.querySelector('[name="direccion"]').value,
+                    telefono: document.querySelector('[name="telefono"]').value,
+                    mensaje_pie: document.querySelector('[name="mensaje_pie"]').value
+                };
+                window.updateTicketDisplay();
+            });
+        });
+    }
+});
